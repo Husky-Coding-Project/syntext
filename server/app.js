@@ -1,5 +1,6 @@
 const express = require('express')
+const snippetRouter = require('./controllers/snippets')
 
 const app = express()
-
-export default app;
+app.use('/api', snippetRouter)
+module.exports = app;
