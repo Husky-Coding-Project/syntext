@@ -1,9 +1,9 @@
 const app = require('./app') // the actual Express application
 const config = require('./utils/config')
 //const logger = require('./utils/logger')
-const snippetRouter = require('./controllers/snippets')
+// const snippetRouter = require('./controllers/snippets')
 
-const router = snippetRouter.get('/api')
+// const router = snippetRouter.get('/api')
 
 
 

@@ -4,13 +4,13 @@ const getSnippetData = () => {
         short: [
             {
             id: 1, 
-            SnippetType:'PRINT',
+            type:'PRINT',
             length: 'SHORT',
             data: ['System.out.println("goodbye world");']
             },
             {
             id: 2,
-            SnippetType: 'PRINT',
+            type: 'PRINT',
             length: 'SHORT',
             data: ['String myCat = "Matilda";',
                     'System.out.println(myCat.charAt(3));'
@@ -18,7 +18,7 @@ const getSnippetData = () => {
             },
             {
             id: 3,
-            SnippetType: 'PRINT',
+            type: 'PRINT',
             length: 'SHORT',
             data: ['int sum = myCat.length() - myGod.length();',
                     'System.out.println(sum);'
@@ -27,8 +27,8 @@ const getSnippetData = () => {
         ],
         medium: [
             {
-            id: 1, 
-            SnippetType:'FOR_LOOP',
+            id: 4, 
+            type:'FOR_LOOP',
             length: 'MED',
             data: ['for (int i = 0; i < 10; i++) {',
                     '\tSystem.out.println(i);',
@@ -36,8 +36,8 @@ const getSnippetData = () => {
             ]
             },
             {
-            id: 2, 
-            SnippetType:'FOR_LOOP',
+            id: 5, 
+            type:'FOR_LOOP',
             length: 'MED',  
             data: ['for (int i = 0; i < rows; i++) {',
                     '\tfor (int j = 0; j < columns; j++) {',
@@ -47,8 +47,8 @@ const getSnippetData = () => {
             ]
             },
             {
-            id: 3, 
-            SnippetType:'CONDITIONAL',
+            id: 6, 
+            type:'CONDITIONAL',
             length: 'MED',
             data: ['if (hours > 8) {',
                     '\treturn (rate * 8) + ((hours - 8) * (rate * 1.5));',
@@ -61,8 +61,8 @@ const getSnippetData = () => {
         ],
         long: [
             {
-            id: 1, 
-            SnippetType:'FOR_LOOP',
+            id: 7, 
+            type:'FOR_LOOP',
             length: 'LONG',
             data: ['int j = 20;',  
                     'for (int i = 0; i < 10; i++) {',  
@@ -76,8 +76,8 @@ const getSnippetData = () => {
                 ]
             },
             {
-            id: 2, 
-            SnippetType:'WHILE_LOOP',
+            id: 8, 
+            type:'WHILE_LOOP',
             length: 'LONG',
             data: ['int total = 0;',
                     'int turns = 0;',
@@ -91,8 +91,8 @@ const getSnippetData = () => {
             ]
             },
             {
-            id: 3, 
-            SnippetType:'WHILE_LOOP',
+            id: 9, 
+            type:'WHILE_LOOP',
             length: 'LONG',
             data: [
                 'while (input.hasNextLine()) {',
