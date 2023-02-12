@@ -1,32 +1,29 @@
 
 const getSnippetData = () => {
-    return {
-        short: [
-            {
+    return [
+        {
             id: 1, 
             type:'PRINT',
             length: 'SHORT',
             data: ['System.out.println("goodbye world");']
-            },
-            {
+        },
+        {
             id: 2,
             type: 'PRINT',
             length: 'SHORT',
             data: ['String myCat = "Matilda";',
                     'System.out.println(myCat.charAt(3));'
             ] 
-            },
-            {
+        },
+        {
             id: 3,
             type: 'PRINT',
             length: 'SHORT',
             data: ['int sum = myCat.length() - myGod.length();',
                     'System.out.println(sum);'
             ]
-            }    
-        ],
-        medium: [
-            {
+        },
+        {
             id: 4, 
             type:'FOR_LOOP',
             length: 'MED',
@@ -34,8 +31,8 @@ const getSnippetData = () => {
                     '\tSystem.out.println(i);',
                     '}'    
             ]
-            },
-            {
+        },
+        {
             id: 5, 
             type:'FOR_LOOP',
             length: 'MED',  
@@ -45,8 +42,8 @@ const getSnippetData = () => {
                     '\t}',
                     '}'
             ]
-            },
-            {
+        },
+        {
             id: 6, 
             type:'CONDITIONAL',
             length: 'MED',
@@ -57,10 +54,8 @@ const getSnippetData = () => {
                     '\treturn rate * hours;',
                     '}'
             ]  
-            }  
-        ],
-        long: [
-            {
+        },
+        {
             id: 7, 
             type:'FOR_LOOP',
             length: 'LONG',
@@ -74,8 +69,8 @@ const getSnippetData = () => {
                     '\tj -= 1;',  
                     '}' 
                 ]
-            },
-            {
+        },
+        {
             id: 8, 
             type:'WHILE_LOOP',
             length: 'LONG',
@@ -89,8 +84,8 @@ const getSnippetData = () => {
                     '}',
                     'System.out.println("You earned $" + total + "!");'
             ]
-            },
-            {
+        },
+        {
             id: 9, 
             type:'WHILE_LOOP',
             length: 'LONG',
@@ -107,9 +102,8 @@ const getSnippetData = () => {
                 '\tSystem.out.println();',
                 '}'
             ]
-            }
-        ]
-    }
+        }
+    ]
 }
 
 module.exports = {getSnippetData}
