@@ -23,6 +23,7 @@ readSnippetRouter.get('/:id', (req, res) => {
         }
 
         console.log(processedResult)
+        res.json(processedResult);
         
     })
 })

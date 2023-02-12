@@ -1,12 +1,15 @@
 const {getSnippetData} = require('../example_data/hardcodedsnippets')
-const {createSnippet} = require('./db')
+const {createSnippet} = require('../db/db')
 
+
+const exampleSnippets = getSnippetData();
 
 const fill = (exampleData) => {
     exampleData.forEach((snippet) => {
         createSnippet(snippet);
     })
 }
-fill(getSnippetData().short);
-fill(getSnippetData().medium);
-fill(getSnippetData().long);
+
+fill(exampleSnippets);
+console.log('filled tables');
+

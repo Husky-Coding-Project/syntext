@@ -38,12 +38,12 @@ const createSnippet = async (snippet) => {
 
     try {
         // Insert the snippet record into snippet_records table
-        const recordQuery = `INSERT INTO syntext.snippet_records (id, snippet_type, snippet_length) VALUES (${id}, '${type}', '${length}');`;
+        const recordQuery = `REPLACE INTO syntext.snippet_records (id, snippet_type, snippet_length) VALUES (${id}, '${type}', '${length}');`;
         await connection.query(recordQuery);
 
         // Insert each array in the data array into snippet_data table
         const dataQueries = data.map((array, arrayIndex) => {
-            return `INSERT INTO syntext.snippet_data (id, line_index, line_text) VALUES (${id}, ${arrayIndex}, '${array}');`;
+            return `REPLACE INTO syntext.snippet_data (id, line_index, line_text) VALUES (${id}, ${arrayIndex}, '${array}');`;
         });
         await Promise.all(dataQueries.map(query => connection.query(query)));
 
