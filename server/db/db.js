@@ -12,7 +12,7 @@ const pool = mysql.createPool({
     database: config.MYSQL_DATABASE
 }).promise()
 
-
+ 
 
 const getSnippetByID = async (id) => {
     try {
@@ -38,24 +38,28 @@ const createSnippet = async (snippet) => {
 
     try {
         // Insert the snippet record into snippet_records table
-        const recordQuery = `REPLACE INTO syntext.snippet_records (id, snippet_type, snippet_length) VALUES (${id}, '${type}', '${length}');`;
+        const recordQuery = `INSERT INTO syntext.snippet_records (id, snippet_type, snippet_length) VALUES (${id}, '${type}', '${length}');`;
         await connection.query(recordQuery);
 
         // Insert each array in the data array into snippet_data table
         const dataQueries = data.map((array, arrayIndex) => {
-            return `REPLACE INTO syntext.snippet_data (id, line_index, line_text) VALUES (${id}, ${arrayIndex}, '${array}');`;
+            return `INSERT INTO syntext.snippet_data (id, line_index, line_text) VALUES (${id}, ${arrayIndex}, '${array}');`;
         });
         await Promise.all(dataQueries.map(query => connection.query(query)));
-
         connection.release();
+        return {
+            outcome: 'success',
+            created: {id, type, length}
+        };
     } catch (error) {
         console.error(error);
         connection.release();
+        return error;
     }
 };
 
 
-const deleteSnippet = async (id) => {
+const deleteSnippetByID = async (id) => {
     try {
         const connection = await pool.getConnection();
         const query1 = `DELETE FROM snippet_records WHERE id = ${id}`;
@@ -65,8 +69,10 @@ const deleteSnippet = async (id) => {
         connection.release();
     } catch (error) {
         console.error(error);
+        connection.release();
+        return error;
     }
 };
 
 
-module.exports = {getSnippetByID, createSnippet, deleteSnippet}
+module.exports = {getSnippetByID, createSnippet, deleteSnippetByID}

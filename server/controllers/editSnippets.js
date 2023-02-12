@@ -1,14 +1,10 @@
 const editSnippetRouter = require('express').Router()
 const Snippet = require('../db/db')
+const bodyParser = require('body-parser')
 
-editSnippetRouter.post('/', (req, res) => {
-    // const snippet_ex = {
-    //     id: 9, 
-    //     type: 'WHILE LOOP', 
-    //     length: 'SHORT', 
-    //     data: [[2,5], [8, 9]]
-    // }
+const jsonParser = bodyParser.json();
 
+editSnippetRouter.post('/mksnippet', jsonParser, (req, res) => {
     const {id, type, length, data} = req.body;
     const snippetObject = {
         id: id,
@@ -16,13 +12,15 @@ editSnippetRouter.post('/', (req, res) => {
         length: length,
         data: data
     }
-    return Snippet.createSnippet(snippetObject)
+    Snippet.createSnippet(snippetObject).then((result) => {
+        (result.errno) ? res.status(400).send(result) : res.send(result)
+    });
 })
 
-editSnippetRouter.delete('/:id', (req, res) => {
-    const id = req.params.id;
-    console.log('request sent')
-    return Snippet.deleteSnippet(id)
+editSnippetRouter.delete('/delsnippet', (req, res) => {
+    const id = req.query.id;
+    console.log('request sent, deleted snippet with id: ', id)
+    res.send(Snippet.deleteSnippetByID(id))
 })
 
 module.exports = editSnippetRouter
