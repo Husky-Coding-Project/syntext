@@ -75,4 +75,4 @@ const deleteSnippetByID = async (id) => {
 };
 
 
-module.exports = {getSnippetByID, createSnippet, deleteSnippetByID}
+module.exports = {getSnippetByID, createSnippet, deleteSnippetByID, pool }

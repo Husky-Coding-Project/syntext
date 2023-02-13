@@ -1,9 +1,9 @@
 const readSnippetRouter = require('express').Router()
-const Snippet = require('../db/db')
+const SnippetDBClient = require('../db/db')
 
 readSnippetRouter.get('/getsnippet', (req, res) => {
     console.log(req.query.id)
-    Snippet.getSnippetByID(req.query.id)
+    SnippetDBClient.getSnippetByID(req.query.id)
     .then(result =>{
         let id;
         let type;
