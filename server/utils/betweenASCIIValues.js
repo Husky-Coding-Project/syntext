@@ -7,7 +7,7 @@ const toAscii = (strings) => {
 
 const toChar = (asciiArr) => {
     let charArr = []
-    asciiArr.forEach(ascii => charArr.push(ascii.fromCharCode))
+    asciiArr.forEach(ascii => charArr.push(String.fromCharCode(ascii)))
     return charArr
 }
 
