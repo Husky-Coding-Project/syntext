@@ -1,7 +1,7 @@
 // get the client
 const mysql = require('mysql2');
 const config = require('../utils/config.js')
-
+const {toAscii} = require('../utils/betweenASCIIValues')
 
 
 
@@ -43,7 +43,7 @@ const createSnippet = async (snippet) => {
 
         // Insert each array in the data array into snippet_data table
         const dataQueries = data.map((array, arrayIndex) => {
-            return `INSERT INTO syntext.snippet_data (id, line_index, line_text) VALUES (${id}, ${arrayIndex}, '${array}');`;
+            return `INSERT INTO syntext.snippet_data (id, line_index, line_text) VALUES (${id}, ${arrayIndex}, '[${toAscii(array)}]');`;
         });
         await Promise.all(dataQueries.map(query => connection.query(query)));
         connection.release();
