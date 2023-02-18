@@ -19,7 +19,7 @@ const Game = ({ lines }) => {
 	const wordIndex = useRef(0)
 	// the index of the letter last typed by the user
 	// updated with userInput (only on success though)
-	const [letterIndex, setLetterIndex] = useState(0)
+	const letterIndex = useRef(-1)
 
     return (
         <TextArea
@@ -32,7 +32,6 @@ const Game = ({ lines }) => {
             lineIndex={lineIndex}
             wordIndex={wordIndex}
             letterIndex={letterIndex}
-            setLetterIndex={setLetterIndex}
         />
     );
 }

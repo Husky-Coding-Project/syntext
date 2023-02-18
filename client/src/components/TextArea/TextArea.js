@@ -19,7 +19,7 @@ const Letter = (props) => {
 	
 	let className = '';
 	if (inActiveWord && hasBeenTyped) className = isCorrect ? ' correct' : ' incorrect';
-	if (inActiveWord && cursor.letterIndex  === index) className += ' cursorPos';
+	if (inActiveWord && cursor.letterIndex.current  === index) className += ' cursorPos';
 
 	return (<div className={`letter${className}`}>{letterDisplayed}</div>);
 }
@@ -40,7 +40,7 @@ const Word = (props) => {
 		: word.split('')
 	const  correct = (wordActive && userInput.length > word.length) ?
 	(l, i) => (i >= word.length) ? false : (l === word[i]) :
-	(l, i) => l === userInput[i] || !wordActive || i > cursor.letterIndex
+	(l, i) => l === userInput[i] || !wordActive || i > cursor.letterIndex.current
 
 	const letters = lettersMapper.map((l, i) => {
 		const isCorrect = correct(l, i)
@@ -52,7 +52,7 @@ const Word = (props) => {
 				isCorrect={isCorrect}
 				hasBeenTyped={
 					cursor.lineIndex.current > lineIndex ||
-					(cursor.letterIndex > i - 1 &&
+					(cursor.letterIndex.current > i - 1 &&
 					cursor.wordIndex.current >= index)
 				}
 				cursor={cursor}
@@ -102,12 +102,12 @@ export default function TextArea(props) {
 		lineIndex,
 		wordIndex,
 		letterIndex,
-		setLetterIndex 
 	} = props;
 	const cursor = { lineIndex, wordIndex, letterIndex }
 
 	useEffect(() => {
-		setLetterIndex(userInput.length - 1)
+		console.log('useEffect called')
+		letterIndex.current = userInput.length;
 	}, [userInput, currWord])
 
 	const DEBUG = (hasMistake, allowedToOverflow) => {
@@ -131,7 +131,7 @@ export default function TextArea(props) {
 			!currWordHasMistake(currWord, userInput)) {
 			setCurrWord(currLine.current[wordIndex.current + 1]);
 			wordIndex.current++;
-			setLetterIndex(-1);
+			letterIndex.current = (-1);
 			setUserInput('');
 			event.preventDefault();
 		}
@@ -144,19 +144,22 @@ export default function TextArea(props) {
 			lineIndex.current++; 
 			setCurrWord((lines[lineIndex.current].split(" "))[0]);
 			wordIndex.current = 0;
+			letterIndex.current = -1;
 			setUserInput('');
 			event.preventDefault();
 		}
 		// Tab key handler
 		else if (event.key === 'Tab') {
-			if (currWord[letterIndex + 1] === '	') {
+			if (currWord[letterIndex.current + 1] === '	') {
 				setUserInput(userInput.concat('	'));
 			}
 			event.preventDefault();
 		} 
 		// Backspace key handler
 		else if (event.key === 'Backspace') {
+			letterIndex.current -= 2;
 			setUserInput(userInput.substring(0, userInput.length - 1));
+
 			event.preventDefault();
 		}
 	}
