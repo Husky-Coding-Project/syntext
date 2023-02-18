@@ -5,19 +5,18 @@ import stylesheet from './TextArea.css'
 
 
 const Letter = (props) => {
-	const{ letterActual,
+	const { 
+			letterActual,
 			letterTyped,
 			isCorrect,
 			hasBeenTyped,
 			inActiveWord,
 			cursor,
-			index,
+			index
 	} = props
 
 	const letterDisplayed = (hasBeenTyped && inActiveWord) ? letterTyped : letterActual
-		// if (inActiveWord) {
-		// console.log('index', index)
-		// console.log('positioning', cursor.letterIndex  + 1 === index)}
+	
 	let className = '';
 	if (inActiveWord && hasBeenTyped) className = isCorrect ? ' correct' : ' incorrect';
 	if (inActiveWord && cursor.letterIndex  === index) className += ' cursorPos';
@@ -33,7 +32,6 @@ const Word = (props) => {
 			userInput,
 			lineIndex,
 			wordActive,
-			cursorIsVisible
 	} = props
 
 
@@ -59,7 +57,6 @@ const Word = (props) => {
 				}
 				cursor={cursor}
 				index={i}
-				cursorIsVisible={i  === cursor.letterIndex &&  cursorIsVisible}
 				inActiveWord={wordActive}
 			/>
 		);
@@ -74,19 +71,8 @@ const Word = (props) => {
 	return <span className={"word " + className}>{letters}</span>;
 }
 
-const Line = ({ line, userInput, currentWord, cursor, lineActive, lineIndex }) => {
-
-	const [cursorIsVisible, setCursorIsVisible] = useState(true);
-
-	// useEffect(() => {
-	// 	const intervalId = setInterval(() => {
-	// 	  setCursorIsVisible(prevState => !prevState);
-	// 	}, 500);
-	// 	return () => clearInterval(intervalId);
-	// }, []);
-
+const Line = ({ line, userInput, currWord, cursor, lineActive, lineIndex }) => {
 	const words = line.split(' ').map((word, index) => {
-
 		return (
 			<Word
 				key={index}
@@ -94,11 +80,9 @@ const Line = ({ line, userInput, currentWord, cursor, lineActive, lineIndex }) =
 				index={index}
 				word={word}
 				userInput={userInput}
-				currentWord={currentWord}
+				currWord={currWord}
 				cursor={cursor}
 				wordActive={cursor.wordIndex === index && lineActive}
-				cursorIsVisible={cursorIsVisible}
-				setCursorIsVisible={setCursorIsVisible}
 			/>
 		);
 	});
@@ -107,14 +91,14 @@ const Line = ({ line, userInput, currentWord, cursor, lineActive, lineIndex }) =
 	return <div className={className}>{words}</div>;
 }
 
-export default function TextArea1({ lines }) {
-
+export default function TextArea({ lines }) {
+	
 	// what the user has typed so far for the current word
 	// cleared with wordIndex changes
 	const [userInput, setUserInput] = useState('');
 	// the actual current word.
 	// updated with wordIndex changes
-	const [currentWord, setCurrentWord] = useState(lines[0].split(' ')[0]);
+	const [currWord, setCurrWord] = useState(lines[0].split(' ')[0]);
 	// the array of tokens corresponding to the current line
 	// updated with lineIndex changes
 	const [currLine, setCurrLine] = useState(lines[0].split(" "));
@@ -128,50 +112,51 @@ export default function TextArea1({ lines }) {
 	// updated with userInput (only on success though)
 	const [letterIndex, setLetterIndex] = useState(0)
 
+
 	const cursor = { lineIndex, wordIndex, letterIndex}
 
 	useEffect(() => {
-		if (!atEndOfWord(currentWord, userInput)) {
+		if (!atEndOfWord(currWord, userInput)) {
 			setLetterIndex(userInput.length - 1)
 		} else {
 			setLetterIndex(userInput.length - 1)
 		}
-	}, [userInput, currentWord])
+	}, [userInput, currWord])
 
 	const DEBUG = (hasMistake, allowedToOverflow) => {
 		console.table({'userInput': userInput,
-		'currentWord: ': currentWord,
-		'currentWordHasMistakes: ': hasMistake,
+		'currWord: ': currWord,
+		'currWordHasMistakes: ': hasMistake,
 		'letterIndex: ': letterIndex,
 		'overflow permission: ': allowedToOverflow,
-		'atEndOfWord': atEndOfWord(currentWord, userInput),
+		'atEndOfWord': atEndOfWord(currWord, userInput),
 		'cursor': cursor
 		})
 	}
 
 	// handles special keys seperately
 	const handleSpecialKey = event => {
-		if (atEndOfWord(currentWord, userInput) &&
+		if (atEndOfWord(currWord, userInput) &&
 			!atEndOfLine(wordIndex, currLine) &&
 			event.key === ' ' &&
-			!currWordHasMistake(currentWord, userInput)) {
-			setCurrentWord(currLine[wordIndex + 1]);
+			!currWordHasMistake(currWord, userInput)) {
+			setCurrWord(currLine[wordIndex + 1]);
 			setWordIndex((wIndex) => { return wIndex + 1 });
 			setLetterIndex(-1);
 			setUserInput('');
 			event.preventDefault();
-		} else if (atEndOfWord(currentWord, userInput) &&
+		} else if (atEndOfWord(currWord, userInput) &&
 			atEndOfLine(wordIndex, currLine) &&
-			!currWordHasMistake(currentWord, userInput) &&
+			!currWordHasMistake(currWord, userInput) &&
 			event.key === 'Enter') {
 			setCurrLine(lines[lineIndex + 1].split(" "));
 			setLineIndex((cLine) => { return cLine + 1 });
-			setCurrentWord((lines[lineIndex + 1].split(" "))[0]);
+			setCurrWord((lines[lineIndex + 1].split(" "))[0]);
 			setWordIndex(0);
 			setUserInput('');
 			event.preventDefault();
 		} else if (event.key === 'Tab') {
-			if (currentWord[letterIndex + 1] === '	') {
+			if (currWord[letterIndex + 1] === '	') {
 				setUserInput(userInput.concat('	'));
 			}
 			event.preventDefault();
@@ -180,11 +165,11 @@ export default function TextArea1({ lines }) {
 
 	// handles all characters that are displayed
 	function handleChange(event) {
-		if (allowedToOverflow(currentWord, event.target.value))
+		if (allowedToOverflow(currWord, event.target.value))
 			setUserInput(event.target.value);
 	}
 
-	DEBUG(currWordHasMistake(currentWord, userInput), allowedToOverflow(currentWord, userInput));
+	DEBUG(currWordHasMistake(currWord, userInput), allowedToOverflow(currWord, userInput));
 
 	const renderedLines = lines.map((line, index) => {
 		return (
@@ -192,7 +177,7 @@ export default function TextArea1({ lines }) {
 				lineIndex={index}
 				line={line}
 				userInput={userInput}
-				currentWord={currentWord}
+				currWord={currWord}
 				cursor={cursor}
 				lineActive={cursor.lineIndex === index}
 			/>
@@ -203,7 +188,7 @@ export default function TextArea1({ lines }) {
 		<div className={`center`}>
 			<input value={userInput} onKeyDown={handleSpecialKey} onChange={handleChange}></input>
 			{renderedLines}
-			<br></br>
+			
 			<Cursor letterIndex={letterIndex} wordIndex={wordIndex}/>
 		</div>
 	);
