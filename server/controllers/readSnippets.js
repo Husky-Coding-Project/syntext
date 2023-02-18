@@ -1,19 +1,20 @@
 const readSnippetRouter = require('express').Router()
 const SnippetDBClient = require('../db/db')
 
+
+
 readSnippetRouter.get('/getsnippet', (req, res) => {
-    console.log(req.query.id)
     SnippetDBClient.getSnippetByID(req.query.id)
     .then(result =>{
         let id;
         let type;
         let length;
-        console.log({'unprocessed result': result})
+        //console.log('unprocessed result', result)
         const processedSnippetData = result.map((line) => {
             id = line.id;
             type = line.snippet_type;
             length = line.snippet_length;
-            return line.line_text
+            return line.line_text;
         })
 
         const processedResult = {
@@ -22,14 +23,12 @@ readSnippetRouter.get('/getsnippet', (req, res) => {
             length: length,
             data: processedSnippetData
         }
-
-        console.log(processedResult)
+        console.log('got snippet with id: ', id)
+        //console.log('processed result', processedResult)
         res.json(processedResult);
         
     })
 })
-
-
 
 
 module.exports = readSnippetRouter

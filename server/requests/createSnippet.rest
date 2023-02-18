@@ -5,5 +5,5 @@ Content-Type: application/json
     "id": 1123, 
     "type": "NOT WHILE LOOP", 
     "length": "NOT SHORT", 
-    "data": [[2,5], [6, 9, 5, 3, 2, 6, 4, 5, 2, 2], ["THIS IS A TEST EXAMPLE SNIPPET"]]
+    "data": ["for (int i = 0; i < 69; i++)", "\tSystem.out.println(i);"]
 }
