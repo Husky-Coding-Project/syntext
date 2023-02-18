@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { atEndOfLine, atEndOfWord, currWordHasMistake, allowedToOverflow} from '../inputValidation'
-import Cursor from './Cursor';
+import { atEndOfLine, atEndOfWord, currWordHasMistake, allowedToOverflow } from '../../inputValidation'
+import Cursor from '../Cursor/Cursor';
 import stylesheet from './TextArea.css'
 
 
@@ -34,7 +34,6 @@ const Word = (props) => {
 			wordActive,
 	} = props
 
-
 	let className = '';
 	const lettersMapper = (wordActive && userInput.length > word.length) ?
 		userInput.split('')
@@ -51,9 +50,10 @@ const Word = (props) => {
 				letterActual={l}
 				letterTyped={userInput[i]}
 				isCorrect={isCorrect}
-				hasBeenTyped={cursor.letterIndex > i - 1 &&
-							cursor.lineIndex >= lineIndex &&
-							cursor.wordIndex >= index
+				hasBeenTyped={
+					cursor.lineIndex.current > lineIndex ||
+					(cursor.letterIndex > i - 1 &&
+					cursor.wordIndex.current >= index)
 				}
 				cursor={cursor}
 				index={i}
@@ -62,7 +62,7 @@ const Word = (props) => {
 		);
 	})
 
-	className = (index < cursor.wordIndex && lineIndex <= cursor.lineIndex) ?
+	className = (index < cursor.wordIndex.current && lineIndex <= cursor.lineIndex.current) ?
 		className = 'visited' :
 		className = '';
 
@@ -82,45 +82,32 @@ const Line = ({ line, userInput, currWord, cursor, lineActive, lineIndex }) => {
 				userInput={userInput}
 				currWord={currWord}
 				cursor={cursor}
-				wordActive={cursor.wordIndex === index && lineActive}
+				wordActive={cursor.wordIndex.current === index && lineActive}
 			/>
 		);
 	});
 	let className = '';
-	if (lineIndex < cursor.lineIndex) className = 'visited';
+	if (lineIndex < cursor.lineIndex.current) className = 'visited';
 	return <div className={className}>{words}</div>;
 }
 
-export default function TextArea({ lines }) {
-	
-	// what the user has typed so far for the current word
-	// cleared with wordIndex changes
-	const [userInput, setUserInput] = useState('');
-	// the actual current word.
-	// updated with wordIndex changes
-	const [currWord, setCurrWord] = useState(lines[0].split(' ')[0]);
-	// the array of tokens corresponding to the current line
-	// updated with lineIndex changes
-	const [currLine, setCurrLine] = useState(lines[0].split(" "));
-	// keeps track of the current line. updated when
-	// user presses enter at the very end of a line.
-	const [lineIndex, setLineIndex] = useState(0)
-	// keeps track of the index of the current word in currLine
-	// updated when user moves on to next word
-	const [wordIndex, setWordIndex] = useState(0)
-	// the index of the letter last typed by the user
-	// updated with userInput (only on success though)
-	const [letterIndex, setLetterIndex] = useState(0)
-
-
-	const cursor = { lineIndex, wordIndex, letterIndex}
+export default function TextArea(props) {
+	const { 
+		lines,
+		userInput,
+		setUserInput,
+		currWord,
+		setCurrWord,
+		currLine,
+		lineIndex,
+		wordIndex,
+		letterIndex,
+		setLetterIndex 
+	} = props;
+	const cursor = { lineIndex, wordIndex, letterIndex }
 
 	useEffect(() => {
-		if (!atEndOfWord(currWord, userInput)) {
-			setLetterIndex(userInput.length - 1)
-		} else {
-			setLetterIndex(userInput.length - 1)
-		}
+		setLetterIndex(userInput.length - 1)
 	}, [userInput, currWord])
 
 	const DEBUG = (hasMistake, allowedToOverflow) => {
@@ -130,35 +117,46 @@ export default function TextArea({ lines }) {
 		'letterIndex: ': letterIndex,
 		'overflow permission: ': allowedToOverflow,
 		'atEndOfWord': atEndOfWord(currWord, userInput),
-		'cursor': cursor
+		'cursor': cursor,
+		'atEndOfLine': atEndOfLine(wordIndex, currLine)
 		})
 	}
 
 	// handles special keys seperately
 	const handleSpecialKey = event => {
-		if (atEndOfWord(currWord, userInput) &&
+		// Space key handler
+		if (atEndOfWord(currWord, userInput) && 
 			!atEndOfLine(wordIndex, currLine) &&
 			event.key === ' ' &&
 			!currWordHasMistake(currWord, userInput)) {
-			setCurrWord(currLine[wordIndex + 1]);
-			setWordIndex((wIndex) => { return wIndex + 1 });
+			setCurrWord(currLine.current[wordIndex.current + 1]);
+			wordIndex.current++;
 			setLetterIndex(-1);
 			setUserInput('');
 			event.preventDefault();
-		} else if (atEndOfWord(currWord, userInput) &&
+		}
+		// Enter key handler
+		else if (atEndOfWord(currWord, userInput) && 
 			atEndOfLine(wordIndex, currLine) &&
 			!currWordHasMistake(currWord, userInput) &&
 			event.key === 'Enter') {
-			setCurrLine(lines[lineIndex + 1].split(" "));
-			setLineIndex((cLine) => { return cLine + 1 });
-			setCurrWord((lines[lineIndex + 1].split(" "))[0]);
-			setWordIndex(0);
+			currLine.current = (lines[lineIndex.current + 1].split(" "));
+			lineIndex.current++; 
+			setCurrWord((lines[lineIndex.current].split(" "))[0]);
+			wordIndex.current = 0;
 			setUserInput('');
 			event.preventDefault();
-		} else if (event.key === 'Tab') {
+		}
+		// Tab key handler
+		else if (event.key === 'Tab') {
 			if (currWord[letterIndex + 1] === '	') {
 				setUserInput(userInput.concat('	'));
 			}
+			event.preventDefault();
+		} 
+		// Backspace key handler
+		else if (event.key === 'Backspace') {
+			setUserInput(userInput.substring(0, userInput.length - 1));
 			event.preventDefault();
 		}
 	}
@@ -179,7 +177,7 @@ export default function TextArea({ lines }) {
 				userInput={userInput}
 				currWord={currWord}
 				cursor={cursor}
-				lineActive={cursor.lineIndex === index}
+				lineActive={cursor.lineIndex.current === index}
 			/>
 		)
 	});
@@ -189,7 +187,7 @@ export default function TextArea({ lines }) {
 			<input value={userInput} onKeyDown={handleSpecialKey} onChange={handleChange}></input>
 			{renderedLines}
 			
-			<Cursor letterIndex={letterIndex} wordIndex={wordIndex}/>
+			<Cursor letterIndex={letterIndex} currWord={currWord}/>
 		</div>
 	);
 }

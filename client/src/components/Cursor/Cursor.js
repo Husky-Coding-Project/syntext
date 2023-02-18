@@ -2,20 +2,22 @@ import stylesheet from "./Cursor.css"
 import React, { useState, useEffect } from 'react';
 
 const Cursor = (props) => {
-  const { letterIndex, wordIndex } = props;
+  const { letterIndex, currWord } = props;
 
   useEffect(() => {
     return () => {
       let activeWord = document.querySelector('.active');
       let letter = document.querySelector('.cursorPos');
 
-      if (letter !== null) {
+      if (activeWord === null) {
+        return;
+      } else if (letter !== null) {
         moveCursor(letter.getBoundingClientRect());
       } else if (letter === null) {
         moveCursor(activeWord.querySelector('div').getBoundingClientRect(), true);
       }
     }
-  }, [letterIndex, wordIndex])
+  }, [letterIndex, currWord])
 
   function moveCursor (position, check) {
     let cursorEl = document.querySelector('.cursor');
