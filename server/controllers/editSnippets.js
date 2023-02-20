@@ -23,4 +23,4 @@ editSnippetRouter.delete('/delsnippet', (req, res) => {
     res.send(Snippet.deleteSnippetByID(id))
 })
 
-module.exports = editSnippetRouter
+module.exports = editSnippetRouter;

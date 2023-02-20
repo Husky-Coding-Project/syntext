@@ -12,7 +12,102 @@ const pool = mysql.createPool({
     database: config.MYSQL_DATABASE
 }).promise()
 
- 
+
+
+const getSnippetByType = async (type) => {
+    try {
+        const connection = await pool.getConnection();
+        const query = `
+            SELECT rec.id, rec.snippet_type, rec.snippet_length, data.line_index, data.line_text
+            FROM snippet_records rec INNER JOIN snippet_data data 
+            ON rec.id = data.id 
+            WHERE rec.snippet_type = ? 
+            ORDER BY data.line_index ASC;
+        `;
+        const result = await connection.query(query, [type]);
+        connection.release();
+        console.log(result[0])
+        
+        const charData = result[0].map(line_data => {
+            return {...line_data, line_text: toChar(JSON.parse(line_data.line_text)).join('')}
+        });
+        console.log(charData)
+        let intermediateResult = {};
+        charData.forEach(line => {
+
+            if (!intermediateResult[line.id]) { 
+                intermediateResult[line.id] = {
+                    id: line.id,
+                    length: line.snippet_length, 
+                    type: line.snippet_type, 
+                    data: line.line_text 
+                }
+            } else {
+                intermediateResult[line.id] = { 
+                    ...intermediateResult[line.id], 
+                    data: intermediateResult[line.id].data += '\n' + line.line_text 
+                }
+            }
+        })
+
+        let processedResult = []
+        Object.keys(intermediateResult).forEach(id => {
+            const d = intermediateResult[id].data
+            processedResult.push({...intermediateResult[id], data: d.split('\n')})    
+        })
+        return processedResult
+
+    } catch (error) {
+        console.error(error);
+    }
+};
+
+const getSnippetByLength = async (length) => {
+    try {
+        const connection = await pool.getConnection();
+        const query = `
+            SELECT rec.id, rec.snippet_type, rec.snippet_length, data.line_index, data.line_text 
+            FROM snippet_records rec INNER JOIN snippet_data data 
+            ON rec.id = data.id 
+            WHERE rec.snippet_length = ? 
+            ORDER BY data.line_index ASC;
+        `;
+        const result = await connection.query(query, [length]);
+        connection.release();
+        //console.log(result[0])
+        const characterConvertedData = result[0].map(line_data => {
+            return {...line_data, line_text: toChar(JSON.parse(line_data.line_text)).join('')}
+        });
+
+        let intermediateResult = {};
+        characterConvertedData.forEach(line => {
+
+            if (!intermediateResult[line.id]) { 
+                intermediateResult[line.id] = {
+                    id: line.id,
+                    length: line.snippet_length, 
+                    type: line.snippet_type, 
+                    data: line.line_text 
+                }
+            } else {
+                intermediateResult[line.id] = { 
+                    ...intermediateResult[line.id], 
+                    data: intermediateResult[line.id].data += '\n' + line.line_text 
+                }
+            }
+        })
+
+        let processedResult = []
+        Object.keys(intermediateResult).forEach(id => {
+            const d = intermediateResult[id].data
+            processedResult.push({...intermediateResult[id], data: d.split('\n')})    
+        })
+        return processedResult
+    } catch (error) {
+        console.error(error);
+    }
+};
+
 
 const getSnippetByID = async (id) => {
     try {
@@ -79,4 +174,4 @@ const deleteSnippetByID = async (id) => {
 };
 
 
-module.exports = {getSnippetByID, createSnippet, deleteSnippetByID, pool }
+module.exports = {getSnippetByType, getSnippetByLength, getSnippetByID, createSnippet, deleteSnippetByID }

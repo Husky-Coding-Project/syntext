@@ -1,1 +1,1 @@
-GET http://localhost:3001/api/read/getsnippet?id=3
+GET http://localhost:3001/api/read/get/id?id=7
