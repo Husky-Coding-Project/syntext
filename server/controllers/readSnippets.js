@@ -7,7 +7,10 @@ readSnippetRouter.get('/get/length', (req, res) => {
     .then(result => res.send(result))
 })
 
-
+readSnippetRouter.get('/get/lengthandtype', (req, res) => {
+    SnippetDBClient.getSnippetByLengthAndType(req.query.length, req.query.type)
+    .then(result => res.send(result));
+})
 
 /*
 unprocessed result [
